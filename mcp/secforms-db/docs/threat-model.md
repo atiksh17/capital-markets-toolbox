@@ -34,6 +34,7 @@ Goal: friends can read everything in `secforms.public`. They cannot write, exfil
    ```sql
    SELECT * FROM information_schema.role_table_grants WHERE grantee = 'secforms_ro';
    ```
+   Role has `BYPASSRLS` so it can see all rows (Supabase enables RLS on public tables by default). BYPASSRLS does not grant writes — `default_transaction_read_only = on` + missing INSERT/UPDATE/DELETE grants still reject every write attempt.
 2. The MCP container's `PG_DSN` uses **only** the `secforms_ro` role, never the superuser.
 3. `TOKENS_JSON` (or legacy `BEARER_TOKENS`) is non-empty in production. `JWT_SECRET` is non-empty for OAuth to work.
 4. The Dockerfile bundles no secrets — env vars injected at runtime.

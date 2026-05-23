@@ -15,6 +15,13 @@ BEGIN
   END IF;
 END $$;
 
+-- Required when public tables have RLS enabled (Supabase default).
+-- Without this the role gets the SELECT grant but RLS default-deny returns 0 rows
+-- for every query (no SELECT policy whitelists the role).
+-- Safe for a read-only analytics role: BYPASSRLS does not grant any write privilege —
+-- writes are still rejected by `default_transaction_read_only = on` + missing INSERT/UPDATE/DELETE grants.
+ALTER ROLE secforms_ro BYPASSRLS;
+
 REVOKE ALL ON DATABASE secforms FROM secforms_ro;
 GRANT CONNECT ON DATABASE secforms TO secforms_ro;
 

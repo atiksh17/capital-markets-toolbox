@@ -58,6 +58,18 @@ DB has `statement_timeout = 15s` for the read-only role. Tighten:
 
 `truncated: true` means you hit the `limit` cap (default 100, max 10000). Pass higher `limit`, paginate with `ORDER BY + LIMIT n OFFSET k`, or narrow filter.
 
+## Every query returns 0 rows even though I know data exists
+
+Almost certainly RLS on the underlying tables with no policy whitelisting the MCP role. Tables in Supabase default to RLS-enabled. Even with the `SELECT` grant, no matching `SELECT` policy = deny-by-default for non-superuser roles.
+
+Maintainer fix (one-time, as superuser):
+
+```sql
+ALTER ROLE secforms_ro BYPASSRLS;
+```
+
+Already applied in `setup/01_create_role.sql`. Re-run `setup/apply.sh` if `pg_roles.rolbypassrls` is false for `secforms_ro`.
+
 ## I want to write data
 
 You can't. Read-only by design. If you need write access, that's a different MCP — talk to the maintainer.
