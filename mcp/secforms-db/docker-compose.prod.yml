@@ -1,0 +1,37 @@
+services:
+  secforms-mcp:
+    build: .
+    image: secforms-mcp:prod
+    container_name: secforms-mcp
+    env_file:
+      - .env.prod
+    restart: unless-stopped
+    networks:
+      - sec
+      - proxy
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "coolify"
+
+      traefik.http.routers.secforms-mcp-http.entryPoints: "http"
+      traefik.http.routers.secforms-mcp-http.rule: "Host(`mcp.nubeam.io`)"
+      traefik.http.routers.secforms-mcp-http.middlewares: "secforms-mcp-redir"
+
+      traefik.http.routers.secforms-mcp-https.entryPoints: "https"
+      traefik.http.routers.secforms-mcp-https.rule: "Host(`mcp.nubeam.io`)"
+      traefik.http.routers.secforms-mcp-https.tls: "true"
+      traefik.http.routers.secforms-mcp-https.tls.certresolver: "letsencrypt"
+      traefik.http.routers.secforms-mcp-https.service: "secforms-mcp-svc"
+
+      traefik.http.middlewares.secforms-mcp-redir.redirectscheme.scheme: "https"
+      traefik.http.middlewares.secforms-mcp-redir.redirectscheme.permanent: "true"
+
+      traefik.http.services.secforms-mcp-svc.loadbalancer.server.port: "8000"
+
+networks:
+  sec:
+    external: true
+    name: supabase-slim_sec-internal
+  proxy:
+    external: true
+    name: coolify

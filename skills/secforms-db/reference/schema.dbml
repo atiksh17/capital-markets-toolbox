@@ -1,0 +1,633 @@
+// ============================================================
+// SEC Forms Database — DBML
+// Paste into dbdiagram.io or drawdb.
+// ============================================================
+
+// ------------------------------------------------------------
+// REGISTRY: forms — every form_type + side classification
+// ------------------------------------------------------------
+
+Table forms [headercolor: #2a7a17] {
+  form             text [pk, not null]
+  purpose          text [not null]
+  why_filed        text [not null]
+  nubeam_relevance text [not null]
+  signal_side      text [not null, note: "allocator | seeker | unknown"]
+  filings_count    bigint [not null, default: 0]
+  companies_count  bigint [not null, default: 0]
+}
+
+// ------------------------------------------------------------
+// CORE: signals + cik_list + junction
+// ------------------------------------------------------------
+
+Table signals [headercolor: #175e7a] {
+  accession  text [pk, not null]
+  form_type  text [not null]
+  date_added date [not null]
+
+  Indexes {
+    (form_type, date_added) [name: 'idx_signals_form_date']
+  }
+}
+
+Table cik_list [headercolor: #175e7a] {
+  cik        text [pk, not null]
+  date_added date [not null]
+  enriched   boolean [not null]
+}
+
+Table signal_ciks [headercolor: #175e7a] {
+  accession text [pk, not null]
+  cik       text [pk, not null]
+  cik_role  text [pk, not null]
+
+  Indexes {
+    (cik) [name: 'idx_signal_ciks_cik']
+    (accession) [name: 'idx_signal_ciks_accession']
+  }
+}
+
+// ------------------------------------------------------------
+// ENTITIES
+// ------------------------------------------------------------
+
+Table companies [headercolor: #175e7a] {
+  company_cik      text [pk, not null]
+  name             text [not null]
+  ticker           text
+  exchanges        jsonb
+  former_names     jsonb
+  sic              text
+  sic_description  text
+  state_of_incorp  text
+  address          text
+  website          text
+  investor_website text
+  fiscal_year_end  text
+  entity_type      text [not null]
+  filer_category   text
+}
+
+Table people [headercolor: #175e7a] {
+  person_cik     text [pk, not null]
+  canonical_name text [not null]
+  former_names   jsonb [not null]
+  address        text
+  entity_type    text [not null]
+}
+
+// ------------------------------------------------------------
+// ENTITY FILINGS
+// ------------------------------------------------------------
+
+Table company_filings [headercolor: #175e7a] {
+  company_cik text [pk, not null]
+  accession   text [pk, not null]
+  form        text [not null]
+  filing_date date [not null]
+  items       text
+
+  Indexes {
+    (filing_date) [name: 'idx_company_filings_filing_date']
+    (form)        [name: 'idx_company_filings_form']
+  }
+}
+
+Table people_filings [headercolor: #175e7a] {
+  person_cik  text [pk, not null]
+  accession   text [pk, not null]
+  form        text [not null]
+  filing_date date [not null]
+
+  Indexes {
+    (filing_date) [name: 'idx_people_filings_filing_date']
+    (form)        [name: 'idx_people_filings_form']
+  }
+}
+
+// ============================================================
+// FORM TABLES
+// ============================================================
+
+Table form_n_cen [headercolor: #175e7a] {
+  accession               text [pk, not null]
+  form_type               text [not null]
+  filing_date             date [not null]
+  filer_cik               text [not null]
+  doc_url                 text [not null]
+  doc_name                text [not null]
+  doc_mime                text [not null]
+  index_url               text [not null]
+  byte_size               bigint [not null]
+  holdings                jsonb [not null]
+  holdings_count          bigint [not null]
+  total_holding_value_usd bigint [not null]
+}
+
+Table form_n_px [headercolor: #175e7a] {
+  accession               text [pk, not null]
+  form_type               text [not null]
+  filing_date             date [not null]
+  filer_cik               text [not null]
+  doc_url                 text [not null]
+  doc_name                text [not null]
+  doc_mime                text [not null]
+  index_url               text [not null]
+  byte_size               bigint [not null]
+  holdings                jsonb [not null]
+  holdings_count          bigint [not null]
+  total_holding_value_usd bigint [not null]
+}
+
+Table form_n_14 [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title jsonb
+}
+
+Table form_425 [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text
+}
+
+Table form_fwp [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text
+}
+
+Table form_424b5 [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text
+}
+
+Table form_144_a [headercolor: #175e7a] {
+  accession             text [pk, not null]
+  form_type             text [not null]
+  filing_date           date [not null]
+  filer_cik             text [not null]
+  doc_url               text [not null]
+  doc_name              text [not null]
+  doc_mime              text [not null]
+  index_url             text [not null]
+  byte_size             bigint [not null]
+  issuer_name           text [not null]
+  company_name          text [not null]
+  issuer_cik            text [not null]
+  company_cik           text [not null]
+  seller_name           text [not null]
+  person_name           text [not null]
+  relationships         jsonb [not null]
+  security_class_title  text [not null]
+  broker_name           text [not null]
+  total_shares          bigint [not null]
+  agg_market_value      numeric [not null]
+  approx_sale_date      date [not null]
+  shares_outstanding    bigint [not null]
+  exchange_name         text [not null]
+  nature_of_acquisition text [not null]
+  date_of_acquisition   date [not null]
+  acquired_from         text [not null]
+  amount_acquired       bigint [not null]
+  is_gift               boolean [not null]
+}
+
+Table form_n_port [headercolor: #175e7a] {
+  accession               text [pk, not null]
+  form_type               text [not null]
+  filing_date             date [not null]
+  filer_cik               text [not null]
+  doc_url                 text [not null]
+  doc_name                text [not null]
+  doc_mime                text [not null]
+  index_url               text [not null]
+  byte_size               bigint [not null]
+  series_name             text [not null]
+  reg_name                text [not null]
+  reg_cik                 text [not null]
+  company_name            text [not null]
+  company_cik             text [not null]
+  rep_pd_end              date [not null]
+  rep_pd_date             date [not null]
+  total_assets            numeric [not null]
+  total_liabilities       numeric [not null]
+  net_assets              numeric [not null]
+  holdings                jsonb [not null]
+  holdings_count          bigint [not null]
+  total_holding_value_usd numeric [not null]
+}
+
+Table form_40_app [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text [not null]
+}
+
+Table form_def_14a [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text
+}
+
+Table form_s_3 [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text
+}
+
+Table form_5 [headercolor: #175e7a] {
+  accession                text [pk, not null]
+  form_type                text [not null]
+  filing_date              date [not null]
+  filer_cik                text [not null]
+  doc_url                  text [not null]
+  doc_name                 text [not null]
+  doc_mime                 text [not null]
+  index_url                text [not null]
+  byte_size                bigint [not null]
+  period_of_report         date [not null]
+  not_subject_to_section16 boolean [not null]
+  issuer_cik               text [not null]
+  issuer_name              text [not null]
+  issuer_trading_symbol    text [not null]
+  company_cik              text [not null]
+  company_name             text [not null]
+  reporting_owners         jsonb [not null]
+  person_cik               text [not null]
+  person_name              text [not null]
+  is_officer               boolean [not null]
+  is_director              boolean [not null]
+  is_ten_pct               boolean [not null]
+  officer_title            text
+  transactions             jsonb [not null]
+  sale_count               bigint [not null]
+  total_sale_usd           bigint [not null]
+}
+
+Table form_3 [headercolor: #175e7a] {
+  accession                text [pk, not null]
+  form_type                text [not null]
+  filing_date              date [not null]
+  filer_cik                text [not null]
+  doc_url                  text [not null]
+  doc_name                 text [not null]
+  doc_mime                 text [not null]
+  index_url                text [not null]
+  byte_size                bigint [not null]
+  period_of_report         date [not null]
+  not_subject_to_section16 jsonb
+  issuer_cik               text [not null]
+  issuer_name              text [not null]
+  issuer_trading_symbol    text [not null]
+  company_cik              text [not null]
+  company_name             text [not null]
+  reporting_owners         jsonb [not null]
+  person_cik               text [not null]
+  person_name              text [not null]
+  is_officer               boolean
+  is_director              boolean
+  is_ten_pct               boolean
+  officer_title            text
+  transactions             jsonb [not null]
+  sale_count               bigint [not null]
+  total_sale_usd           bigint [not null]
+}
+
+Table form_4_a [headercolor: #175e7a] {
+  accession                text [pk, not null]
+  form_type                text [not null]
+  filing_date              date [not null]
+  filer_cik                text [not null]
+  doc_url                  text [not null]
+  doc_name                 text [not null]
+  doc_mime                 text [not null]
+  index_url                text [not null]
+  byte_size                bigint [not null]
+  period_of_report         date [not null]
+  not_subject_to_section16 boolean
+  issuer_cik               text [not null]
+  issuer_name              text [not null]
+  issuer_trading_symbol    text [not null]
+  company_cik              text [not null]
+  company_name             text [not null]
+  reporting_owners         jsonb [not null]
+  person_cik               text [not null]
+  person_name              text [not null]
+  is_officer               boolean
+  is_director              boolean
+  is_ten_pct               boolean
+  officer_title            text
+  transactions             jsonb [not null]
+  sale_count               bigint [not null]
+  total_sale_usd           numeric [not null]
+}
+
+Table form_4 [headercolor: #175e7a] {
+  accession                text [pk, not null]
+  form_type                text [not null]
+  filing_date              date [not null]
+  filer_cik                text [not null]
+  doc_url                  text [not null]
+  doc_name                 text [not null]
+  doc_mime                 text [not null]
+  index_url                text [not null]
+  byte_size                bigint [not null]
+  period_of_report         date [not null]
+  not_subject_to_section16 boolean [not null]
+  issuer_cik               text [not null]
+  issuer_name              text [not null]
+  issuer_trading_symbol    text [not null]
+  company_cik              text [not null]
+  company_name             text [not null]
+  reporting_owners         jsonb [not null]
+  person_cik               text [not null]
+  person_name              text [not null]
+  is_officer               boolean [not null]
+  is_director              boolean [not null]
+  is_ten_pct               boolean [not null]
+  officer_title            jsonb
+  transactions             jsonb [not null]
+  sale_count               bigint [not null]
+  total_sale_usd           numeric [not null]
+}
+
+Table form_d_a [headercolor: #175e7a] {
+  accession                       text [pk, not null]
+  form_type                       text [not null]
+  filing_date                     date [not null]
+  filer_cik                       text [not null]
+  doc_url                         text [not null]
+  doc_name                        text [not null]
+  doc_mime                        text [not null]
+  index_url                       text [not null]
+  byte_size                       bigint [not null]
+  entity_name                     text [not null]
+  entity_type                     text [not null]
+  jurisdiction_of_inc             text [not null]
+  year_of_inc                     text
+  company_name                    text [not null]
+  submission_type                 text [not null]
+  is_amendment                    boolean [not null]
+  company_cik                     text [not null]
+  industry_group_type             text [not null]
+  investment_fund_type            text
+  revenue_range                   text
+  aggregate_net_asset_value_range text
+  date_of_first_sale              date
+  total_offering_amount           bigint
+  total_amount_sold               bigint [not null]
+  total_remaining                 bigint
+  minimum_investment_accepted     bigint [not null]
+  total_number_already_invested   bigint [not null]
+  has_non_accredited_investors    boolean [not null]
+}
+
+Table form_8_k [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  items          jsonb [not null]
+  item_count     bigint [not null]
+  body_text_head text [not null]
+}
+
+Table form_10_q [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text
+}
+
+Table form_s_1_a [headercolor: #175e7a] {
+  accession      text [pk, not null]
+  form_type      text [not null]
+  filing_date    date [not null]
+  filer_cik      text [not null]
+  doc_url        text [not null]
+  doc_name       text [not null]
+  doc_mime       text [not null]
+  index_url      text [not null]
+  byte_size      bigint [not null]
+  body_text_head text [not null]
+  document_title text
+}
+
+Table form_sc_13g [headercolor: #175e7a] {
+  accession              text [pk, not null]
+  form_type              text [not null]
+  filing_date            date [not null]
+  filer_cik              text [not null]
+  doc_url                text [not null]
+  doc_name               text [not null]
+  doc_mime               text [not null]
+  index_url              text [not null]
+  byte_size              bigint [not null]
+  submission_type        text
+  securities_class_title text
+  date_of_event          jsonb
+  issuer_cik             text
+  issuer_name            text
+  company_name           text
+  company_cik            text
+  cusips                 jsonb
+  cusip                  text
+  reporting_persons      jsonb [not null]
+}
+
+Table form_c [headercolor: #175e7a] {
+  accession                    text [pk, not null]
+  form_type                    text [not null]
+  filing_date                  date [not null]
+  filer_cik                    text [not null]
+  doc_url                      text [not null]
+  doc_name                     text [not null]
+  doc_mime                     text [not null]
+  index_url                    text [not null]
+  byte_size                    bigint [not null]
+  submission_type              text [not null]
+  company_name                 text [not null]
+  company_cik                  text [not null]
+  entity_type                  text [not null]
+  jurisdiction_of_inc          text [not null]
+  date_incorporation           text [not null]
+  issuer_website               text [not null]
+  intermediary_name            text [not null]
+  intermediary_cik             text [not null]
+  intermediary_crd             text [not null]
+  progress_update              jsonb
+  security_offered_type        text [not null]
+  price                        bigint [not null]
+  offering_amount              bigint [not null]
+  target_offering_amount       jsonb
+  maximum_offering_amount      bigint [not null]
+  deadline                     text [not null]
+  current_employees            bigint [not null]
+  total_asset_most_recent_fy   bigint [not null]
+  total_revenue_most_recent_fy jsonb
+  net_income_most_recent_fy    bigint [not null]
+}
+
+Table form_13f_hr [headercolor: #175e7a] {
+  accession         text [pk, not null]
+  form_type         text [not null]
+  filing_date       date [not null]
+  filer_cik         text [not null]
+  doc_url           text [not null]
+  doc_name          text [not null]
+  doc_mime          text [not null]
+  index_url         text [not null]
+  byte_size         bigint [not null]
+  company_cik       text [not null]
+  company_name      text [not null]
+  report_type       text [not null]
+  period_of_report  date [not null]
+  table_entry_total bigint [not null]
+  table_value_total bigint [not null]
+}
+
+Table form_144 [headercolor: #175e7a] {
+  accession             text [pk, not null]
+  form_type             text [not null]
+  filing_date           date [not null]
+  filer_cik             text [not null]
+  doc_url               text [not null]
+  doc_name              text [not null]
+  doc_mime              text [not null]
+  index_url             text [not null]
+  byte_size             bigint [not null]
+  issuer_name           text [not null]
+  company_name          text [not null]
+  issuer_cik            text [not null]
+  company_cik           text [not null]
+  seller_name           text [not null]
+  person_name           text [not null]
+  relationships         jsonb [not null]
+  security_class_title  text [not null]
+  broker_name           text [not null]
+  total_shares          bigint [not null]
+  agg_market_value      numeric [not null]
+  approx_sale_date      date [not null]
+  shares_outstanding    bigint [not null]
+  exchange_name         text [not null]
+  nature_of_acquisition text [not null]
+  date_of_acquisition   date [not null]
+  acquired_from         text [not null]
+  amount_acquired       bigint [not null]
+  is_gift               boolean [not null]
+}
+
+// ============================================================
+// RELATIONSHIPS
+// ============================================================
+
+// signals → forms (N:1 — many signals per form_type)
+Ref: signals.form_type > forms.form [delete: restrict, update: cascade]
+
+// junction → signals + cik_list
+Ref: signal_ciks.accession > signals.accession [delete: cascade, update: no action]
+Ref: signal_ciks.cik       > cik_list.cik     [delete: cascade, update: no action]
+
+// entities → cik_list (1:1, cik unique on both sides)
+Ref: companies.company_cik - cik_list.cik [delete: cascade, update: no action]
+Ref: people.person_cik     - cik_list.cik [delete: cascade, update: no action]
+
+// entity filings → entities (N:1)
+Ref: company_filings.company_cik > companies.company_cik [delete: cascade, update: no action]
+Ref: people_filings.person_cik   > people.person_cik     [delete: cascade, update: no action]
+
+// forms → signals (1:1, accession PK on both sides)
+Ref: form_n_cen.accession    - signals.accession [delete: cascade, update: no action]
+Ref: form_n_px.accession     - signals.accession [delete: cascade, update: no action]
+Ref: form_n_14.accession     - signals.accession [delete: cascade, update: no action]
+Ref: form_425.accession      - signals.accession [delete: cascade, update: no action]
+Ref: form_fwp.accession      - signals.accession [delete: cascade, update: no action]
+Ref: form_424b5.accession    - signals.accession [delete: cascade, update: no action]
+Ref: form_144_a.accession    - signals.accession [delete: cascade, update: no action]
+Ref: form_n_port.accession   - signals.accession [delete: cascade, update: no action]
+Ref: form_40_app.accession   - signals.accession [delete: cascade, update: no action]
+Ref: form_def_14a.accession  - signals.accession [delete: cascade, update: no action]
+Ref: form_s_3.accession      - signals.accession [delete: cascade, update: no action]
+Ref: form_5.accession        - signals.accession [delete: cascade, update: no action]
+Ref: form_3.accession        - signals.accession [delete: cascade, update: no action]
+Ref: form_4_a.accession      - signals.accession [delete: cascade, update: no action]
+Ref: form_4.accession        - signals.accession [delete: cascade, update: no action]
+Ref: form_d_a.accession      - signals.accession [delete: cascade, update: no action]
+Ref: form_8_k.accession      - signals.accession [delete: cascade, update: no action]
+Ref: form_10_q.accession     - signals.accession [delete: cascade, update: no action]
+Ref: form_s_1_a.accession    - signals.accession [delete: cascade, update: no action]
+Ref: form_sc_13g.accession   - signals.accession [delete: cascade, update: no action]
+Ref: form_c.accession        - signals.accession [delete: cascade, update: no action]
+Ref: form_13f_hr.accession   - signals.accession [delete: cascade, update: no action]
+Ref: form_144.accession      - signals.accession [delete: cascade, update: no action]

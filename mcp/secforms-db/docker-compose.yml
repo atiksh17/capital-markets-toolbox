@@ -1,0 +1,19 @@
+services:
+  secforms-mcp:
+    build: .
+    image: secforms-mcp:dev
+    container_name: secforms-mcp
+    env_file:
+      - .env.local
+    environment:
+      PG_DSN: "postgresql://secforms_ro:L3ZMpgN48vWvYO3skmW4%2FBgKvOmiy7HhANPYbyl%2BXSg%3D@sec-postgres:5432/secforms?sslmode=disable"
+    ports:
+      - "127.0.0.1:8088:8000"
+    networks:
+      - sec
+    restart: unless-stopped
+
+networks:
+  sec:
+    external: true
+    name: supabase-slim_sec-internal

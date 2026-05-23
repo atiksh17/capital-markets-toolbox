@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/schemas/connector-manifest-v1.json",
+  "name": "secforms-db",
+  "display_name": "secforms-db (SEC filings)",
+  "description": "Read-only access to the secforms Postgres database — 27 SEC EDGAR form tables, enriched company + people profiles, and the signals/junction layer. Pairs with the secforms-db skill.",
+  "version": "0.2.0",
+  "publisher": "nuBeam",
+  "homepage": "https://github.com/nubeam/capital-markets-toolbox",
+  "icon": "icon.png",
+  "transport": {
+    "type": "streamable-http",
+    "url": "https://mcp.nubeam.io/mcp"
+  },
+  "auth": {
+    "type": "oauth2",
+    "discovery_url": "https://mcp.nubeam.io/.well-known/oauth-protected-resource"
+  },
+  "scopes": [
+    "read:database"
+  ],
+  "categories": [
+    "data",
+    "research",
+    "finance"
+  ]
+}

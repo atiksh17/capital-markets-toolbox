@@ -1,0 +1,37 @@
+# Secrets — never commit
+.env
+.env.local
+.env.prod
+.env.*.local
+TOKENS.local.md
+*.pem
+*.key
+*.crt
+**/secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local DB dumps
+*.dump
+*.sql.gz
+*.tar.gz
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Build artifacts
+dist/
+build/
+*.whl
+secforms-db-skill.zip
